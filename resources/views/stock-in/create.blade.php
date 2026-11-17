@@ -172,7 +172,11 @@
                                         </div>
 
                                         <div class="min-w-0">
-                                            <div class="text-sm font-medium leading-snug text-slate-900 line-clamp-2" x-text="item.name"></div>
+                                           <div class="text-sm font-medium leading-snug text-slate-900 line-clamp-2">
+                                                <span x-text="item.name"></span>
+                                                <span x-show="item.is_supply"
+                                                    class="ml-1 px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 text-[10px] font-medium align-middle">Bahan</span>
+                                            </div>
                                             <div class="text-xs text-slate-500" x-text="'Stok ' + item.stock + ' ' + item.unit"></div>
                                             <div class="text-xs text-slate-400" x-show="item.purchase_unit"
                                                  x-text="'1 ' + item.purchase_unit + ' = ' + item.per + ' ' + item.unit"></div>

@@ -53,6 +53,7 @@ class StockOutController extends Controller
             'purchase_unit' => $p->purchase_unit,
             'per'           => $p->units_per_purchase,
             'stock'         => $p->stock,
+            'is_supply'     => ! $p->is_for_sale,
         ])->values();
 
         $reasons = StockMovement::manualReasons();

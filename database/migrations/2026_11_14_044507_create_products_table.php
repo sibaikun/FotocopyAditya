@@ -24,6 +24,7 @@ return new class extends Migration
             $table->unsignedInteger('bulk_price')->nullable();
             $table->integer('stock')->default(0);
             $table->string('supplier')->nullable();
+            $table->boolean('is_for_sale')->default(true);
             $table->timestamps();
         });
     }

@@ -35,6 +35,10 @@
                 <div class="bg-white p-4 shadow sm:rounded-lg">
                     <div class="text-xs text-gray-500">Pengeluaran (Belanja Stok)</div>
                     <div class="text-xl font-bold text-red-600">Rp {{ number_format($expense, 0, ',', '.') }}</div>
+                    <div class="mt-1 text-xs text-slate-500">
+                        Barang: Rp {{ number_format($expenseGoods, 0, ',', '.') }}
+                        &middot; Bahan: Rp {{ number_format($expenseSupplies, 0, ',', '.') }}
+                    </div>
                 </div>
                 <div class="bg-white p-4 shadow sm:rounded-lg">
                     <div class="text-xs text-gray-500">Selisih</div>

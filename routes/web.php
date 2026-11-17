@@ -7,6 +7,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StockInController;
 use App\Http\Controllers\StockOutController;
+use App\Http\Controllers\SupplyController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
@@ -43,6 +44,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/kasir', [TransactionController::class, 'store'])->name('transactions.store');
     Route::get('/nota', [TransactionController::class, 'index'])->name('transactions.index');
     Route::get('/nota/{transaction}', [TransactionController::class, 'show'])->name('transactions.show');
+
+    Route::resource('bahan', SupplyController::class)
+    ->parameters(['bahan' => 'supply'])
+    ->names('supplies')
+    ->except('show');
 
     Route::get('/laporan', [ReportController::class, 'index'])->name('reports.index');
 });

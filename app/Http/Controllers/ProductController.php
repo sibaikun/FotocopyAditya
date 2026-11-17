@@ -13,6 +13,7 @@ class ProductController extends Controller
         $terms = preg_split('/\s+/', trim((string) $request->q), -1, PREG_SPLIT_NO_EMPTY);
 
         $products = Product::query()
+            ->forSale()
             ->when($terms, function ($query, $terms) {
                 foreach ($terms as $term) {
                     $query->where('name', 'like', '%' . $term . '%');

@@ -41,6 +41,7 @@ class StockInController extends Controller
             'buy_price'     => $p->buy_price,
             'buy_unit'      => $p->buy_price_unit,
             'edit_url'      => route('products.edit', $p),
+            'is_supply'     => ! $p->is_for_sale,
         ])->values();
 
         $back = $this->safeBack(request('back'));

@@ -99,6 +99,7 @@
             <x-sidebar-link :href="route('dashboard')" icon="home" :active="request()->routeIs('dashboard')">Dashboard</x-sidebar-link>
             <x-sidebar-link :href="route('transactions.create')" icon="cart" :active="request()->routeIs('transactions.create')">Kasir</x-sidebar-link>
             <x-sidebar-link :href="route('products.index')" icon="cube" :active="request()->routeIs('products.*')">Barang</x-sidebar-link>
+            <x-sidebar-link :href="route('supplies.index')" icon="archive" :active="request()->routeIs('supplies.*')">Bahan</x-sidebar-link>
             <x-sidebar-link :href="route('stock-in.index')" icon="download" :active="request()->routeIs('stock-in.*')">Barang Masuk</x-sidebar-link>
             <x-sidebar-link :href="route('stock-out.index')" icon="upload" :active="request()->routeIs('stock-out.*')">Barang Keluar</x-sidebar-link>
             <x-sidebar-link :href="route('services.index')" icon="tag" :active="request()->routeIs('services.*')">Jasa</x-sidebar-link>

@@ -8,8 +8,23 @@ class Product extends Model
 {
     protected $fillable = [
         'name', 'image', 'unit', 'purchase_unit', 'units_per_purchase',
-        'buy_price', 'buy_price_unit', 'sell_price', 'bulk_price', 'supplier', 'stock',
+        'buy_price', 'buy_price_unit', 'sell_price', 'bulk_price',
+        'supplier', 'is_for_sale', 'stock',
     ];
+
+    protected $casts = ['is_for_sale' => 'boolean'];
+
+    // Barang yang dijual di Kasir
+    public function scopeForSale($query)
+    {
+        return $query->where('is_for_sale', true);
+    }
+
+    // Bahan internal (tinta, plastik laminating, dll)
+    public function scopeSupplies($query)
+    {
+        return $query->where('is_for_sale', false);
+    }
 
     public function movements()
     {
@@ -22,7 +37,6 @@ class Product extends Model
     }
 
     // Total uang yang dikeluarkan untuk membeli $baseQty item.
-    // Dihitung sekali di akhir supaya pembulatan nggak menumpuk.
     public function costFor(int $baseQty): int
     {
         $divisor = $this->buy_price_unit === 'purchase'

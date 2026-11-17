@@ -24,7 +24,7 @@ class TransactionController extends Controller
 
     public function create()
     {
-        $products = Product::where('stock', '>', 0)->orderBy('name')
+        $products = Product::forSale()->where('stock', '>', 0)->orderBy('name')
             ->get(['id', 'name', 'unit', 'purchase_unit', 'units_per_purchase', 'sell_price', 'bulk_price', 'stock']);
 
         $services = Service::where('is_active', true)->orderBy('name')
@@ -64,48 +64,48 @@ public function store(Request $request)
         foreach ($data['items'] as $row) {
             $qty = (int) $row['qty'];
 
-            if ($row['type'] === 'product') {
-                $product = Product::lockForUpdate()->findOrFail($row['id']);
+        if ($row['type'] === 'product') {
+            $product = Product::forSale()->lockForUpdate()->findOrFail($row['id']);   // hanya barang yang dijual
 
-                $isBulk = ($row['unit'] ?? 'base') === 'purchase';
+            $isBulk = ($row['unit'] ?? 'base') === 'purchase';
 
-                if ($isBulk && (! $product->purchase_unit || ! $product->bulk_price)) {
-                    throw ValidationException::withMessages([
-                        'items' => "{$product->name} tidak dijual borongan.",
-                    ]);
-                }
-
-                $factor   = $isBulk ? $product->units_per_purchase : 1;
-                $baseQty  = $qty * $factor;
-                $price    = $isBulk ? $product->bulk_price : $product->sell_price; // harga selalu dari database
-                $unitName = $isBulk ? $product->purchase_unit : $product->unit;
-
-                if ($product->stock < $baseQty) {
-                    throw ValidationException::withMessages([
-                        'items' => "Stok {$product->name} tidak cukup (sisa {$product->stock} {$product->unit}).",
-                    ]);
-                }
-
-                StockMovement::create([
-                    'product_id'     => $product->id,
-                    'type'           => 'out',
-                    'qty'            => $baseQty,
-                    'input_qty'      => $qty,
-                    'input_unit'     => $unitName,
-                    'reason'         => 'sale',
-                    'transaction_id' => $transaction->id,
-                    'note'           => 'Penjualan ' . $invoiceNo,
-                    'date'           => $transaction->date,
+            if ($isBulk && (! $product->purchase_unit || ! $product->bulk_price)) {
+                throw ValidationException::withMessages([
+                    'items' => "{$product->name} tidak dijual borongan.",
                 ]);
-                
-                $product->decrement('stock', $baseQty);
+            }
 
-                $item = [
-                    'product_id' => $product->id,
-                    'item_name'  => $product->name,
-                    'unit'       => $unitName,
-                    'base_qty'   => $baseQty,
-                ];
+            $factor   = $isBulk ? $product->units_per_purchase : 1;
+            $baseQty  = $qty * $factor;
+            $price    = $isBulk ? $product->bulk_price : $product->sell_price; // harga selalu dari database
+            $unitName = $isBulk ? $product->purchase_unit : $product->unit;
+
+            if ($product->stock < $baseQty) {
+                throw ValidationException::withMessages([
+                    'items' => "Stok {$product->name} tidak cukup (sisa {$product->stock} {$product->unit}).",
+                ]);
+            }
+
+            StockMovement::create([
+                'product_id'     => $product->id,
+                'type'           => 'out',
+                'qty'            => $baseQty,
+                'input_qty'      => $qty,
+                'input_unit'     => $unitName,
+                'reason'         => 'sale',
+                'transaction_id' => $transaction->id,
+                'note'           => 'Penjualan ' . $invoiceNo,
+                'date'           => $transaction->date,
+            ]);
+
+            $product->decrement('stock', $baseQty);
+
+            $item = [
+                'product_id' => $product->id,
+                'item_name'  => $product->name,
+                'unit'       => $unitName,
+                'base_qty'   => $baseQty,
+            ];
             } else {
                 $service = Service::findOrFail($row['id']);
                 $price   = (int) ($row['price'] ?? $service->price); // jasa boleh diubah di kasir

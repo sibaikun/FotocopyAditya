@@ -43,6 +43,17 @@ class ReportController extends Controller
         // pengeluaran = total belanja stok (barang masuk)
         $expenseQuery = StockMovement::where('type', 'in')->whereBetween('date', [$from, $to]);
         $expense      = (clone $expenseQuery)->sum('total_cost');
+        // pengeluaran dipisah: barang dagangan vs bahan internal
+        $expenseSplit = StockMovement::query()
+            ->join('products', 'products.id', '=', 'stock_movements.product_id')
+            ->where('stock_movements.type', 'in')
+            ->whereBetween('stock_movements.date', [$from, $to])
+            ->groupBy('products.is_for_sale')
+            ->selectRaw('products.is_for_sale, SUM(stock_movements.total_cost) as total')
+            ->pluck('total', 'is_for_sale');
+
+        $expenseGoods    = (int) $expenseSplit->get(1, 0);
+        $expenseSupplies = (int) $expenseSplit->get(0, 0);
 
         $byType = TransactionItem::query()
             ->join('transactions', 'transactions.id', '=', 'transaction_items.transaction_id')
@@ -86,6 +97,8 @@ class ReportController extends Controller
             'label'       => $label,
             'omzet'       => $omzet,
             'expense'     => $expense,
+            'expenseGoods'    => $expenseGoods,
+            'expenseSupplies' => $expenseSupplies,
             'net'         => $omzet - $expense,
             'count'       => $count,
             'productSale' => $byType['product'] ?? 0,
