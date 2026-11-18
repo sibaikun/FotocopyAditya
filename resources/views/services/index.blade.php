@@ -40,6 +40,11 @@
                                 <td class="px-5 py-4 font-medium transition-colors"
                                     :class="on ? 'text-slate-900' : 'text-slate-400'">
                                     {{ $s->name }}
+                                    @if ($s->supplies->isNotEmpty())
+                                        <div class="mt-0.5 text-xs font-normal text-slate-400">
+                                            Bahan: {{ $s->supplies->map(fn ($b) => $b->name . ' ×' . $b->pivot->qty)->implode(', ') }}
+                                        </div>
+                                    @endif
                                 </td>
 
                                 <td class="px-5 py-4 whitespace-nowrap transition-colors"

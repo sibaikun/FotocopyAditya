@@ -9,6 +9,7 @@ class StockMovement extends Model
     // Alasan barang keluar
     public const OUT_REASONS = [
         'sale'    => 'Penjualan',
+        'service' => 'Pemakaian jasa',
         'damaged' => 'Rusak',
         'lost'    => 'Hilang',
         'own_use' => 'Dipakai sendiri',
@@ -23,7 +24,7 @@ class StockMovement extends Model
     // Alasan yang boleh dipilih di form manual (penjualan hanya dari Kasir)
     public static function manualReasons(): array
     {
-        return array_diff_key(self::OUT_REASONS, ['sale' => true]);
+        return array_diff_key(self::OUT_REASONS, ['sale' => true, 'service' => true]);
     }
 
     public function product()

@@ -76,6 +76,7 @@
                                     'lost'    => 'bg-amber-100 text-amber-700',
                                     'own_use' => 'bg-violet-100 text-violet-700',
                                     'other'   => 'bg-slate-100 text-slate-600',
+                                    'service' => 'bg-teal-100 text-teal-700',
                                 ][$m->reason] ?? 'bg-slate-100 text-slate-600';
                             @endphp
                             <tr class="hover:bg-slate-50">
@@ -95,9 +96,12 @@
                                     </span>
                                 </td>
                                 <td class="px-5 py-4 text-slate-700">
-                                    @if ($m->reason === 'sale' && $m->transaction)
+                                    @if ($m->transaction)
                                         <a href="{{ route('transactions.show', $m->transaction) }}"
-                                           class="text-blue-600 hover:underline">{{ $m->transaction->invoice_no }}</a>
+                                        class="text-blue-600 hover:underline">{{ $m->transaction->invoice_no }}</a>
+                                        @if ($m->reason === 'service')
+                                            <div class="text-xs text-slate-500">{{ $m->note }}</div>
+                                        @endif
                                     @else
                                         {{ $m->note ?? '-' }}
                                     @endif

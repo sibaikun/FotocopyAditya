@@ -107,8 +107,32 @@ public function store(Request $request)
                 'base_qty'   => $baseQty,
             ];
             } else {
-                $service = Service::findOrFail($row['id']);
+                $service = Service::with('supplies')->findOrFail($row['id']);
                 $price   = (int) ($row['price'] ?? $service->price); // jasa boleh diubah di kasir
+
+                // Bahan yang terpakai jasa ini ikut dikurangi (jumlah per jasa x jumlah jasa)
+                foreach ($service->supplies as $supply) {
+                    $used = $supply->pivot->qty * $qty;
+
+                    $material = Product::supplies()->lockForUpdate()->find($supply->id);
+                    if (! $material) {
+                        continue;
+                    }
+
+                    StockMovement::create([
+                        'product_id'     => $material->id,
+                        'type'           => 'out',
+                        'qty'            => $used,
+                        'input_qty'      => $used,
+                        'input_unit'     => $material->unit,
+                        'reason'         => 'service',
+                        'transaction_id' => $transaction->id,
+                        'note'           => $service->name . ' x' . $qty,
+                        'date'           => $transaction->date,
+                    ]);
+
+                    $material->decrement('stock', $used);
+                }
 
                 $item = [
                     'service_id' => $service->id,
