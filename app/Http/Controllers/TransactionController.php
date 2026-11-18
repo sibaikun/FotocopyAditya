@@ -49,7 +49,7 @@ public function store(Request $request)
         $today = now()->toDateString();
 
         $seq = Transaction::whereDate('date', $today)->lockForUpdate()->count() + 1;
-        $invoiceNo = 'INV-' . now()->format('Ymd') . '-' . str_pad($seq, 3, '0', STR_PAD_LEFT);
+        $invoiceNo = 'FCA-' . now()->format('Ymd') . '-' . str_pad($seq, 3, '0', STR_PAD_LEFT);
 
         $transaction = Transaction::create([
             'invoice_no' => $invoiceNo,
